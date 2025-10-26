@@ -1,0 +1,202 @@
+"""
+NLP module for converting problem descriptions into mission statements
+Uses OpenAI GPT-4 API
+"""
+from typing import Optional, Dict
+from openai import OpenAI
+from config import Config
+
+
+class MissionStatementGenerator:
+    """Converts user problem descriptions into formalized mission statements"""
+    
+    def __init__(self, api_key: Optional[str] = None):
+        """
+        Initialize the generator
+        
+        Args:
+            api_key: OpenAI API key (uses Config if not provided)
+        """
+        self.api_key = api_key or Config.OPENAI_API_KEY
+        self.client = OpenAI(api_key=self.api_key)
+    
+    def generate_mission_statement(self, problem_description: str, 
+                                   context: Optional[str] = None) -> Dict:
+        """
+        Convert a problem description into a formal mission statement
+        
+        Args:
+            problem_description: User's description of the community problem
+            context: Additional context about the problem (optional)
+            
+        Returns:
+            Dictionary containing the mission statement and related information
+        """
+        prompt = self._create_mission_prompt(problem_description, context)
+        
+        try:
+            response = self.client.chat.completions.create(
+                model=Config.TEXT_MODEL,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": """You are an expert at converting community problems into 
+                        actionable, inspiring mission statements for learning projects. You create 
+                        clear, motivating statements that define the problem, the goal, and the 
+                        expected impact."""
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                max_tokens=500,
+                temperature=0.7
+            )
+            
+            result = response.choices[0].message.content
+            
+            # Parse the structured response
+            parsed = self._parse_mission_response(result)
+            
+            return {
+                'success': True,
+                'original_description': problem_description,
+                'mission_statement': parsed.get('mission_statement', result),
+                'problem_definition': parsed.get('problem_definition', ''),
+                'goal': parsed.get('goal', ''),
+                'expected_impact': parsed.get('expected_impact', ''),
+                'action_steps': parsed.get('action_steps', []),
+                'full_response': result
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'original_description': problem_description
+            }
+    
+    def _create_mission_prompt(self, problem_description: str, 
+                              context: Optional[str] = None) -> str:
+        """
+        Create a prompt for mission statement generation
+        
+        Args:
+            problem_description: User's problem description
+            context: Additional context
+            
+        Returns:
+            Formatted prompt string
+        """
+        base_prompt = f"""Convert the following community problem description into a formalized, 
+project-oriented mission statement:
+
+Problem Description: "{problem_description}"
+"""
+        
+        if context:
+            base_prompt += f"\nAdditional Context: {context}\n"
+        
+        base_prompt += """
+Please provide:
+
+1. MISSION STATEMENT: A clear, inspiring statement (2-3 sentences) that:
+   - Defines the core problem
+   - States the goal/objective
+   - Highlights the expected community impact
+
+2. PROBLEM DEFINITION: A precise definition of the issue (1-2 sentences)
+
+3. GOAL: The specific, measurable outcome we're working toward
+
+4. EXPECTED IMPACT: How this will benefit the community
+
+5. ACTION STEPS: 3-5 key steps to address this problem
+
+Format your response clearly with these headers."""
+        
+        return base_prompt
+    
+    def _parse_mission_response(self, response: str) -> Dict:
+        """
+        Parse the structured response from the API
+        
+        Args:
+            response: Raw API response text
+            
+        Returns:
+            Dictionary with parsed components
+        """
+        parsed = {}
+        
+        sections = {
+            'mission_statement': ['MISSION STATEMENT:', 'Mission Statement:'],
+            'problem_definition': ['PROBLEM DEFINITION:', 'Problem Definition:'],
+            'goal': ['GOAL:', 'Goal:'],
+            'expected_impact': ['EXPECTED IMPACT:', 'Expected Impact:'],
+            'action_steps': ['ACTION STEPS:', 'Action Steps:']
+        }
+        
+        for key, headers in sections.items():
+            for header in headers:
+                if header in response:
+                    # Extract text after this header and before the next section
+                    start_idx = response.find(header) + len(header)
+                    remaining = response[start_idx:]
+                    
+                    # Find the next header
+                    next_header_idx = len(remaining)
+                    for other_key, other_headers in sections.items():
+                        if other_key != key:
+                            for other_header in other_headers:
+                                idx = remaining.find(other_header)
+                                if idx != -1 and idx < next_header_idx:
+                                    next_header_idx = idx
+                    
+                    content = remaining[:next_header_idx].strip()
+                    
+                    # Special handling for action steps (convert to list)
+                    if key == 'action_steps':
+                        steps = [line.strip() for line in content.split('\n') 
+                                if line.strip() and (line.strip()[0].isdigit() or 
+                                line.strip().startswith('-') or line.strip().startswith('•'))]
+                        parsed[key] = steps
+                    else:
+                        parsed[key] = content
+                    break
+        
+        return parsed
+    
+    def generate_batch_missions(self, problem_descriptions: list) -> list:
+        """
+        Generate mission statements for multiple problems
+        
+        Args:
+            problem_descriptions: List of problem descriptions
+            
+        Returns:
+            List of mission statement results
+        """
+        results = []
+        for description in problem_descriptions:
+            result = self.generate_mission_statement(description)
+            results.append(result)
+        return results
+
+
+# Convenience function
+def create_mission_statement(problem_description: str, 
+                            context: Optional[str] = None) -> Dict:
+    """
+    Convenience function to generate a mission statement
+    
+    Args:
+        problem_description: User's problem description
+        context: Additional context
+        
+    Returns:
+        Mission statement results dictionary
+    """
+    generator = MissionStatementGenerator()
+    return generator.generate_mission_statement(problem_description, context)
