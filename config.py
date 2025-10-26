@@ -10,12 +10,12 @@ load_dotenv()
 class Config:
     """Application configuration"""
     
-    # OpenAI API Configuration
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+    # Google Gemini API Configuration
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
     
     # Model configurations
-    VISION_MODEL = "gpt-4o"  # GPT-4 Vision model
-    TEXT_MODEL = "gpt-4o"  # For NLP tasks
+    VISION_MODEL = "gemini-2.5-flash"  # Gemini Vision model (free & stable)
+    TEXT_MODEL = "gemini-2.5-flash"  # For NLP tasks (free & stable)
     
     # Problem categories
     CATEGORIES = ['Environment', 'Health', 'Education']
@@ -55,5 +55,5 @@ class Config:
     @staticmethod
     def validate():
         """Validate that required configuration is present"""
-        if not Config.OPENAI_API_KEY:
-            raise ValueError("OPENAI_API_KEY not found in environment variables")
+        if not Config.GEMINI_API_KEY:
+            raise ValueError("GEMINI_API_KEY not found in environment variables")

@@ -1,268 +1,265 @@
-# AI-Powered Learning Platform
+# 🌍 AI-Powered Learning Platform
 
-An intelligent system that recognizes and translates real-world community challenges into structured learning missions using OpenAI's GPT-4 Vision and Language APIs.
+An intelligent web application that recognizes and translates real-world community challenges into structured learning missions using Google's Gemini Vision and Language APIs.
 
-## 🎯 Project Overview
+![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Streamlit](https://img.shields.io/badge/streamlit-1.28+-red.svg)
+![Gemini](https://img.shields.io/badge/gemini-1.5--flash-green.svg)
 
-This system demonstrates three core capabilities:
+## 🎯 Features
 
-### Task (a): Computer Vision Prototype
+### 🔍 Computer Vision Detection (Task a)
 
-Detects visible community issues across multiple domains:
+Detects community issues in images across three domains:
 
-- **Environment**: littered streets, blocked drainage, deforestation, poor waste disposal
-- **Health**: overcrowded clinics, lack of safety gear, unsanitary public spaces
-- **Education**: overcrowded classrooms, damaged infrastructure, lack of learning materials
+- **🌱 Environment**: littered streets, blocked drainage, deforestation, waste disposal
+- **�� Health**: overcrowded clinics, lack of safety gear, unsanitary spaces
+- **📚 Education**: overcrowded classrooms, damaged infrastructure, lack of materials
 
-### Task (b): Mission Statement Generation
+### 📝 Mission Statement Generation (Task b)
 
-Converts user-written problem descriptions into formalized, project-oriented mission statements using NLP/LLM.
+Converts informal problem descriptions into formal, actionable mission statements:
 
-**Example:**
+- Clear mission statement
+- Problem definition
+- Specific goals
+- Expected community impact
+- Action steps
 
-- Input: "our street is always flooded when it rains"
-- Output: A comprehensive mission statement with goals, impact, and action steps
+### �� Problem Classification (Task c)
 
-### Task (c): Problem Classification Engine
-
-Automatically categorizes identified problems into one of three categories:
+Automatically categorizes problems into:
 
 - Environment
 - Health
 - Education
 
-## 🚀 Features
+With confidence scoring and reasoning.
 
-- **Image Analysis**: Upload images or provide URLs for community issue detection
-- **Text Processing**: Convert informal problem descriptions into structured missions
-- **Smart Classification**: AI-powered categorization with confidence scoring
-- **Integrated Workflow**: Seamless pipeline from detection to mission creation
-- **Interactive Mode**: User-friendly CLI for testing all features
+## 🚀 Quick Start
 
-## 📋 Requirements
-
-- Python 3.8+
-- OpenAI API key
-- Dependencies (see requirements.txt)
-
-## 🔧 Installation
-
-1. **Clone or navigate to the project directory**
-
-2. **Install dependencies**:
+### 1. Install Dependencies
 
 ```bash
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install requirements
 pip install -r requirements.txt
 ```
 
-3. **Set up your OpenAI API key**:
+### 2. Configure API Key
 
-   Create a `.env` file in the project root:
+Create a `.env` file in the project root:
 
 ```bash
-cp .env.example .env
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-Edit `.env` and add your OpenAI API key:
+**Get your free Gemini API key**: https://aistudio.google.com/app/apikey
 
+### 3. Run the Application
+
+```bash
+streamlit run app.py
 ```
-OPENAI_API_KEY=your_openai_api_key_here
-```
+
+The application will open in your browser at `http://localhost:8501`
 
 ## 💻 Usage
 
-### Run All Demonstrations
+### Upload Image Mode
 
-```bash
-python main.py demo-all
+1. Click "📸 Upload Image"
+2. Upload a photo showing a community problem
+3. Select analysis domains (Environment, Health, Education)
+4. Click "🔍 Analyze Image"
+5. View results in Detection, Classification, and Mission Statement tabs
+
+### Text Description Mode
+
+1. Click "✍️ Describe Problem"
+2. Write a description of the community issue
+3. Click "📝 Analyze Description"
+4. View the generated mission statement and classification
+
+### Example Inputs
+
+**Image**: Photos of littered streets, overcrowded clinics, damaged schools
+
+**Text**:
+
+- "Our street is always flooded when it rains"
+- "The clinic has no proper waiting area"
+- "Our school has broken desks and students share textbooks"
+
+## 📊 System Architecture
+
+```
+User Input (Image/Text)
+        ↓
+Vision Detector → Analyzes images, identifies issues
+        ↓
+Classifier → Categorizes into Environment/Health/Education
+        ↓
+Mission Generator → Creates structured mission statement
+        ↓
+Results Display → Interactive web interface
 ```
 
-### Task-Specific Demos
+## 📁 Project Structure
 
-**Task (a) - Vision Detection:**
-
-```bash
-python main.py demo-vision
+```
+computer-vision-prototype/
+├── app.py                    # Streamlit web application
+├── config.py                 # Configuration and settings
+├── vision_detector.py        # Image analysis module
+├── mission_generator.py      # Mission statement generator
+├── problem_classifier.py     # Problem classifier
+├── integrated_system.py      # Integrated workflow
+├── requirements.txt          # Dependencies
+├── .env                      # API key (create this)
+├── .env.example             # Template
+└── README.md                # This file
 ```
 
-**Task (b) - Mission Statement Generation:**
+## 🔑 Core Components
 
-```bash
-python main.py demo-text
-```
+| Component               | Purpose                      | Technology       |
+| ----------------------- | ---------------------------- | ---------------- |
+| `vision_detector.py`    | Detects issues in images     | GPT-4 Vision API |
+| `mission_generator.py`  | Generates mission statements | GPT-4 API        |
+| `problem_classifier.py` | Classifies problems          | GPT-4 API        |
+| `integrated_system.py`  | Orchestrates workflow        | Python           |
+| `app.py`                | Web interface                | Streamlit        |
 
-**Task (c) - Problem Classification:**
+## 🎨 Web Interface Features
 
-```bash
-python main.py demo-classification
-```
+- **📸 Image Upload**: Drag-and-drop or click to upload
+- **✍️ Text Input**: Rich text area with examples
+- **🎯 Domain Selection**: Choose specific domains to analyze
+- **📊 Interactive Results**: Tabbed view for clear presentation
+- **📥 Download Report**: Export analysis as text file
+- **🎨 Modern UI**: Clean, responsive design
 
-### Interactive Mode
+## 📈 Example Output
 
-```bash
-python main.py interactive
-```
+### Input
 
-## 📚 API Usage Examples
+**Text**: "Our street is always flooded when it rains"
 
-### 1. Computer Vision Detection
+### Output
 
-```python
-from vision_detector import CommunityIssueDetector
+**Classification**:
 
-detector = CommunityIssueDetector()
+- Category: 🌱 Environment
+- Confidence: High
 
-# Analyze an image
-result = detector.detect_issues("path/to/image.jpg")
+**Mission Statement**:
 
-print(result['analysis'])
-```
+> To eliminate recurring flood hazards in our community by designing and implementing a sustainable drainage system that protects residents, property, and infrastructure while creating a model for urban water management.
 
-### 2. Mission Statement Generation
+**Goal**:
+Implement a comprehensive drainage solution that prevents 95% of flooding incidents within one year.
 
-```python
-from mission_generator import MissionStatementGenerator
+**Action Steps**:
 
-generator = MissionStatementGenerator()
+1. Conduct drainage survey and hydrological assessment
+2. Design community-appropriate drainage system
+3. Secure funding through grants
+4. Implement improvements with local labor
+5. Establish maintenance protocol
 
-# Generate a mission statement
-result = generator.generate_mission_statement(
-    "our street is always flooded when it rains"
-)
+## ⚙️ Configuration
 
-print(result['mission_statement'])
-print(result['action_steps'])
-```
+Edit `config.py` to customize:
 
-### 3. Problem Classification
+- AI models (GPT-4, GPT-4 Vision)
+- Domain-specific issues
+- API parameters
+- Image settings
 
-```python
-from problem_classifier import ProblemClassifier
+## 💡 Python API Usage
 
-classifier = ProblemClassifier()
-
-# Classify a problem
-result = classifier.classify_problem(
-    "The streets are filled with plastic waste"
-)
-
-print(f"Category: {result['category']}")
-print(f"Confidence: {result['confidence']}")
-```
-
-### 4. Integrated System
+You can also use the components programmatically:
 
 ```python
 from integrated_system import AILearningPlatform
 
+# Initialize platform
 platform = AILearningPlatform()
 
-# Process an image (complete workflow)
+# Analyze image
 result = platform.process_image("path/to/image.jpg")
 print(result['summary'])
 
-# Process a text description
-result = platform.process_text_description(
-    "our school has broken desks"
-)
-print(result['summary'])
+# Analyze text
+result = platform.process_text_description("problem description")
+print(result['mission_statement'])
 ```
 
-## 🏗️ Project Structure
+## 🔒 Security
 
-```
-computer-vision-prototype/
-├── config.py                 # Configuration and settings
-├── vision_detector.py        # Task (a): Computer vision module
-├── mission_generator.py      # Task (b): Mission statement generator
-├── problem_classifier.py     # Task (c): Problem classifier
-├── integrated_system.py      # Integrated platform combining all tasks
-├── main.py                   # Main demo and interactive interface
-├── requirements.txt          # Python dependencies
-├── .env.example             # Environment variables template
-├── .gitignore               # Git ignore rules
-└── README.md                # This file
-```
+- ✅ API keys stored in `.env` (not committed)
+- ✅ Environment variable configuration
+- ✅ Temporary file handling for uploads
+- ⚠️ Monitor OpenAI API usage to control costs
 
-## 🔑 Key Components
+## 📊 API Costs
 
-### `CommunityIssueDetector`
+Estimated costs per request:
 
-Uses GPT-4 Vision to analyze images and detect community issues across multiple domains.
+- Vision analysis: ~$0.01-0.03
+- Text processing: ~$0.01-0.02
+- Classification: ~$0.005-0.01
 
-### `MissionStatementGenerator`
+## 🛠️ Development
 
-Leverages GPT-4 to transform informal problem descriptions into structured, actionable mission statements.
+### Requirements
 
-### `ProblemClassifier`
+- Python 3.8+
+- OpenAI API key with GPT-4 Vision access
+- Internet connection
 
-Employs GPT-4 to categorize problems into Environment, Health, or Education with confidence scoring.
+### Running in Development
 
-### `AILearningPlatform`
+```bash
+# Install in editable mode
+pip install -e .
 
-Integrates all components into a seamless workflow for complete problem analysis.
-
-## 📊 Example Output
-
-```
-======================================================================
-                    COMMUNITY ISSUE ANALYSIS SUMMARY
-======================================================================
-
-🔍 VISION ANALYSIS:
-----------------------------------------------------------------------
-DETECTED ISSUES:
-1. Environment - Severe littering on streets (High severity)
-   Visual Evidence: Multiple plastic bottles, food wrappers, and
-   debris scattered across the road and sidewalk...
-
-📊 CLASSIFICATION:
-----------------------------------------------------------------------
-Category: Environment
-Confidence: High
-
-🎯 MISSION STATEMENT:
-----------------------------------------------------------------------
-To transform our community streets from polluted areas into clean,
-sustainable spaces by implementing a comprehensive waste management
-system that engages local residents and reduces environmental impact.
-
-📝 PROBLEM DEFINITION:
-Excessive littering and inadequate waste disposal systems have created
-unsanitary conditions affecting community health and environment.
-
-🎁 EXPECTED IMPACT:
-Improved public health, enhanced community pride, reduced environmental
-pollution, and creation of a sustainable waste management model.
-
-======================================================================
+# Run with hot reload
+streamlit run app.py --server.runOnSave true
 ```
 
-## 🛠️ Configuration
+## 🐛 Troubleshooting
 
-Edit `config.py` to customize:
+### API Key Not Found
 
-- Model selection (GPT-4, GPT-4 Vision)
-- Problem categories and domain issues
-- API parameters
-- Image upload settings
+```bash
+# Check .env file exists
+ls -la .env
 
-## 🔒 Security Notes
+# Verify content
+cat .env
+```
 
-- Never commit your `.env` file with API keys
-- Keep your OpenAI API key secure
-- Monitor API usage to control costs
-- Use environment variables for sensitive data
+### Module Import Errors
 
-## 🤝 Contributing
+```bash
+# Reinstall dependencies
+pip install -r requirements.txt --force-reinstall
+```
 
-This is a prototype demonstration project. Feel free to extend it with:
+### Streamlit Not Starting
 
-- Additional problem domains
-- Multi-language support
-- Database integration
-- Web interface
-- Batch processing capabilities
+```bash
+# Check Streamlit installation
+streamlit --version
+
+# Try specifying port
+streamlit run app.py --server.port 8502
+```
 
 ## 📝 License
 
@@ -270,16 +267,18 @@ This project is for educational and demonstration purposes.
 
 ## 🙏 Acknowledgments
 
-- Built with OpenAI's GPT-4 and GPT-4 Vision APIs
+- Built with [OpenAI GPT-4](https://openai.com/) Vision and Language APIs
+- Web interface powered by [Streamlit](https://streamlit.io/)
 - Designed for community impact and learning
 
 ## 📧 Support
 
-For issues or questions about this implementation, please refer to:
-
 - OpenAI API Documentation: https://platform.openai.com/docs
-- Python documentation: https://docs.python.org/
+- Streamlit Documentation: https://docs.streamlit.io/
+- Python Documentation: https://docs.python.org/
 
 ---
 
-**Note**: This system requires an active OpenAI API key. API usage will incur costs based on OpenAI's pricing.
+**🌟 Ready to transform community challenges into actionable missions!**
+
+Built with ❤️ for community impact

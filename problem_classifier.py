@@ -3,7 +3,7 @@ Problem Classification Engine
 Automatically categorizes problems into Environment, Health, or Education domains
 """
 from typing import Dict, Optional, List
-from openai import OpenAI
+import google.generativeai as genai
 from config import Config
 
 
@@ -15,10 +15,11 @@ class ProblemClassifier:
         Initialize the classifier
         
         Args:
-            api_key: OpenAI API key (uses Config if not provided)
+            api_key: Gemini API key (uses Config if not provided)
         """
-        self.api_key = api_key or Config.OPENAI_API_KEY
-        self.client = OpenAI(api_key=self.api_key)
+        self.api_key = api_key or Config.GEMINI_API_KEY
+        genai.configure(api_key=self.api_key)
+        self.model = genai.GenerativeModel(Config.TEXT_MODEL)
         self.categories = Config.CATEGORIES
     
     def classify_problem(self, problem_description: str, 
@@ -36,25 +37,8 @@ class ProblemClassifier:
         prompt = self._create_classification_prompt(problem_description, use_reasoning)
         
         try:
-            response = self.client.chat.completions.create(
-                model=Config.TEXT_MODEL,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": """You are an expert classifier that categorizes community 
-                        problems into three domains: Environment, Health, and Education. You 
-                        provide accurate classifications with clear reasoning."""
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                max_tokens=300,
-                temperature=0.3  # Lower temperature for more consistent classification
-            )
-            
-            result = response.choices[0].message.content
+            response = self.model.generate_content(prompt)
+            result = response.text
             
             # Parse the classification
             category, confidence, reasoning = self._parse_classification(result)
@@ -86,8 +70,10 @@ class ProblemClassifier:
         Returns:
             Classification results
         """
-        prompt = f"""Based on the following vision analysis of a community problem image, 
-classify the primary problem category:
+        prompt = f"""You are an expert classifier that categorizes community problems into 
+three domains: Environment, Health, and Education. You provide accurate classifications with clear reasoning.
+
+Based on the following vision analysis of a community problem image, classify the primary problem category:
 
 Vision Analysis:
 {vision_analysis}
@@ -105,23 +91,8 @@ Provide:
 If multiple categories apply, choose the most dominant one."""
         
         try:
-            response = self.client.chat.completions.create(
-                model=Config.TEXT_MODEL,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You classify problems into Environment, Health, or Education categories."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                max_tokens=200,
-                temperature=0.3
-            )
-            
-            result = response.choices[0].message.content
+            response = self.model.generate_content(prompt)
+            result = response.text
             category, confidence, reasoning = self._parse_classification(result)
             
             return {
@@ -152,7 +123,10 @@ If multiple categories apply, choose the most dominant one."""
         """
         categories_desc = self._get_category_descriptions()
         
-        prompt = f"""Classify the following community problem into ONE of these categories:
+        prompt = f"""You are an expert classifier that categorizes community problems into three domains: 
+Environment, Health, and Education. You provide accurate classifications with clear reasoning.
+
+Classify the following community problem into ONE of these categories:
 
 Categories and their scope:
 {categories_desc}

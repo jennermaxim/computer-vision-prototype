@@ -1,26 +1,27 @@
 """
 Computer Vision module for detecting community issues in images
-Uses OpenAI GPT-4 Vision API
+Uses Google Gemini Vision API
 """
 import base64
 import os
 from typing import Dict, List, Optional
-from openai import OpenAI
+import google.generativeai as genai
 from config import Config
 
 
 class CommunityIssueDetector:
-    """Detects community issues in images using GPT-4 Vision"""
+    """Detects community issues in images using Gemini Vision"""
     
     def __init__(self, api_key: Optional[str] = None):
         """
         Initialize the detector
         
         Args:
-            api_key: OpenAI API key (uses Config if not provided)
+            api_key: Gemini API key (uses Config if not provided)
         """
-        self.api_key = api_key or Config.OPENAI_API_KEY
-        self.client = OpenAI(api_key=self.api_key)
+        self.api_key = api_key or Config.GEMINI_API_KEY
+        genai.configure(api_key=self.api_key)
+        self.model = genai.GenerativeModel(Config.VISION_MODEL)
         
     def encode_image(self, image_path: str) -> str:
         """
@@ -40,7 +41,7 @@ class CommunityIssueDetector:
         Detect community issues in an image
         
         Args:
-            image_path: Path to the image file or URL
+            image_path: Path to the image file
             domains: List of domains to focus on (Environment, Health, Education)
             
         Returns:
@@ -51,43 +52,16 @@ class CommunityIssueDetector:
         # Create the prompt
         prompt = self._create_detection_prompt(domains)
         
-        # Prepare the image
-        if image_path.startswith('http://') or image_path.startswith('https://'):
-            # URL image
-            image_content = {
-                "type": "image_url",
-                "image_url": {
-                    "url": image_path
-                }
-            }
-        else:
-            # Local image file
-            base64_image = self.encode_image(image_path)
-            image_content = {
-                "type": "image_url",
-                "image_url": {
-                    "url": f"data:image/jpeg;base64,{base64_image}"
-                }
-            }
-        
         try:
-            # Call OpenAI Vision API
-            response = self.client.chat.completions.create(
-                model=Config.VISION_MODEL,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": prompt},
-                            image_content
-                        ]
-                    }
-                ],
-                max_tokens=1000
-            )
+            # Read and prepare the image
+            from PIL import Image
+            img = Image.open(image_path)
+            
+            # Call Gemini Vision API
+            response = self.model.generate_content([prompt, img])
             
             # Parse the response
-            analysis = response.choices[0].message.content
+            analysis = response.text
             
             return {
                 'success': True,

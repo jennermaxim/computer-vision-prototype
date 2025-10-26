@@ -1,9 +1,9 @@
 """
 NLP module for converting problem descriptions into mission statements
-Uses OpenAI GPT-4 API
+Uses Google Gemini API
 """
 from typing import Optional, Dict
-from openai import OpenAI
+import google.generativeai as genai
 from config import Config
 
 
@@ -15,10 +15,11 @@ class MissionStatementGenerator:
         Initialize the generator
         
         Args:
-            api_key: OpenAI API key (uses Config if not provided)
+            api_key: Gemini API key (uses Config if not provided)
         """
-        self.api_key = api_key or Config.OPENAI_API_KEY
-        self.client = OpenAI(api_key=self.api_key)
+        self.api_key = api_key or Config.GEMINI_API_KEY
+        genai.configure(api_key=self.api_key)
+        self.model = genai.GenerativeModel(Config.TEXT_MODEL)
     
     def generate_mission_statement(self, problem_description: str, 
                                    context: Optional[str] = None) -> Dict:
@@ -35,26 +36,8 @@ class MissionStatementGenerator:
         prompt = self._create_mission_prompt(problem_description, context)
         
         try:
-            response = self.client.chat.completions.create(
-                model=Config.TEXT_MODEL,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": """You are an expert at converting community problems into 
-                        actionable, inspiring mission statements for learning projects. You create 
-                        clear, motivating statements that define the problem, the goal, and the 
-                        expected impact."""
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                max_tokens=500,
-                temperature=0.7
-            )
-            
-            result = response.choices[0].message.content
+            response = self.model.generate_content(prompt)
+            result = response.text
             
             # Parse the structured response
             parsed = self._parse_mission_response(result)
@@ -89,8 +72,11 @@ class MissionStatementGenerator:
         Returns:
             Formatted prompt string
         """
-        base_prompt = f"""Convert the following community problem description into a formalized, 
-project-oriented mission statement:
+        base_prompt = f"""You are an expert at converting community problems into actionable, 
+inspiring mission statements for learning projects. You create clear, motivating statements 
+that define the problem, the goal, and the expected impact.
+
+Convert the following community problem description into a formalized, project-oriented mission statement:
 
 Problem Description: "{problem_description}"
 """
