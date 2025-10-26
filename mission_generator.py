@@ -1,7 +1,3 @@
-"""
-NLP module for converting problem descriptions into mission statements
-Uses Google Gemini API
-"""
 from typing import Optional, Dict
 import google.generativeai as genai
 from config import Config
@@ -11,28 +7,12 @@ class MissionStatementGenerator:
     """Converts user problem descriptions into formalized mission statements"""
     
     def __init__(self, api_key: Optional[str] = None):
-        """
-        Initialize the generator
-        
-        Args:
-            api_key: Gemini API key (uses Config if not provided)
-        """
         self.api_key = api_key or Config.GEMINI_API_KEY
         genai.configure(api_key=self.api_key)
         self.model = genai.GenerativeModel(Config.TEXT_MODEL)
     
     def generate_mission_statement(self, problem_description: str, 
                                    context: Optional[str] = None) -> Dict:
-        """
-        Convert a problem description into a formal mission statement
-        
-        Args:
-            problem_description: User's description of the community problem
-            context: Additional context about the problem (optional)
-            
-        Returns:
-            Dictionary containing the mission statement and related information
-        """
         prompt = self._create_mission_prompt(problem_description, context)
         
         try:
@@ -62,16 +42,6 @@ class MissionStatementGenerator:
     
     def _create_mission_prompt(self, problem_description: str, 
                               context: Optional[str] = None) -> str:
-        """
-        Create a prompt for mission statement generation
-        
-        Args:
-            problem_description: User's problem description
-            context: Additional context
-            
-        Returns:
-            Formatted prompt string
-        """
         base_prompt = f"""You are an expert at converting community problems into actionable, 
 inspiring mission statements for learning projects. You create clear, motivating statements 
 that define the problem, the goal, and the expected impact.
@@ -105,15 +75,6 @@ Format your response clearly with these headers."""
         return base_prompt
     
     def _parse_mission_response(self, response: str) -> Dict:
-        """
-        Parse the structured response from the API
-        
-        Args:
-            response: Raw API response text
-            
-        Returns:
-            Dictionary with parsed components
-        """
         parsed = {}
         
         sections = {
@@ -155,15 +116,6 @@ Format your response clearly with these headers."""
         return parsed
     
     def generate_batch_missions(self, problem_descriptions: list) -> list:
-        """
-        Generate mission statements for multiple problems
-        
-        Args:
-            problem_descriptions: List of problem descriptions
-            
-        Returns:
-            List of mission statement results
-        """
         results = []
         for description in problem_descriptions:
             result = self.generate_mission_statement(description)
@@ -174,15 +126,5 @@ Format your response clearly with these headers."""
 # Convenience function
 def create_mission_statement(problem_description: str, 
                             context: Optional[str] = None) -> Dict:
-    """
-    Convenience function to generate a mission statement
-    
-    Args:
-        problem_description: User's problem description
-        context: Additional context
-        
-    Returns:
-        Mission statement results dictionary
-    """
     generator = MissionStatementGenerator()
     return generator.generate_mission_statement(problem_description, context)

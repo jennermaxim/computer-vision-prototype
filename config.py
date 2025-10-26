@@ -1,6 +1,3 @@
-"""
-Configuration settings for the AI-powered learning platform
-"""
 import os
 from dotenv import load_dotenv
 
@@ -14,8 +11,8 @@ class Config:
     GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
     
     # Model configurations
-    VISION_MODEL = "gemini-2.5-flash"  # Gemini Vision model (free & stable)
-    TEXT_MODEL = "gemini-2.5-flash"  # For NLP tasks (free & stable)
+    VISION_MODEL = "gemini-2.5-flash"  # Gemini Vision model
+    TEXT_MODEL = "gemini-2.5-flash"  # For NLP tasks
     
     # Problem categories
     CATEGORIES = ['Environment', 'Health', 'Education']

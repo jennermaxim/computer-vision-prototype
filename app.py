@@ -1,7 +1,3 @@
-"""
-Streamlit Frontend for AI-Powered Learning Platform
-Recognizes and translates community challenges into learning missions
-"""
 import streamlit as st
 from PIL import Image
 import io
@@ -91,54 +87,6 @@ def display_header():
         '<div class="sub-header">Recognize and translate community challenges into structured learning missions</div>',
         unsafe_allow_html=True
     )
-
-
-def display_sidebar():
-    """Display the sidebar with information and options"""
-    with st.sidebar:
-        st.markdown("## About")
-        st.markdown("""
-        This platform uses AI to:
-        - **Detect** community issues in images
-        - **Classify** problems by domain
-        - **Generate** actionable mission statements
-        """)
-        
-        st.markdown("---")
-        st.markdown("## Domains")
-        st.markdown("""
-        - **Environment**: Waste, pollution, drainage
-        - **Health**: Clinics, sanitation, safety
-        - **Education**: Schools, resources, infrastructure
-        """)
-        
-        st.markdown("---")
-        st.markdown("## How to Use")
-        st.markdown("""
-        1. Choose your input method (Image or Text)
-        2. Upload an image or describe the problem
-        3. Click 'Analyze' to get results
-        4. View detection, classification, and mission statement
-        """)
-        
-        st.markdown("---")
-        st.markdown("## Settings")
-        
-        # Domain selection
-        st.markdown("**Analysis Domains:**")
-        analyze_environment = st.checkbox("Environment", value=True)
-        analyze_health = st.checkbox("Health", value=True)
-        analyze_education = st.checkbox("Education", value=True)
-        
-        domains = []
-        if analyze_environment:
-            domains.append("Environment")
-        if analyze_health:
-            domains.append("Health")
-        if analyze_education:
-            domains.append("Education")
-        
-        st.session_state.selected_domains = domains if domains else Config.CATEGORIES
 
 
 def process_image(image_file, domains):
@@ -288,9 +236,6 @@ def main():
     # Display header
     display_header()
     
-    # Display sidebar
-    display_sidebar()
-    
     # Check API configuration
     if not st.session_state.api_configured:
         st.error("Gemini API key not configured!")
@@ -334,13 +279,6 @@ def main():
                 image = Image.open(uploaded_file)
                 st.image(image, caption="Uploaded Image", use_container_width=True)
         
-        with col2:
-            if uploaded_file is not None:
-                st.markdown("**Image Details:**")
-                st.write(f"- **Name:** {uploaded_file.name}")
-                st.write(f"- **Size:** {uploaded_file.size / 1024:.2f} KB")
-                st.write(f"- **Type:** {uploaded_file.type}")
-        
         # Analyze button
         if uploaded_file is not None:
             if st.button("Analyze Image", key="analyze_image"):
@@ -359,25 +297,6 @@ def main():
             height=150,
             help="Describe the community problem in your own words"
         )
-        
-        # Example descriptions
-        with st.expander("See Example Descriptions"):
-            st.markdown("""
-            **Environment Examples:**
-            - "Our street is always flooded when it rains"
-            - "The local park is filled with plastic waste and litter"
-            - "The drainage system in our neighborhood is blocked"
-            
-            **Health Examples:**
-            - "The clinic has no proper waiting area and people stand in the sun"
-            - "Our community health center lacks basic medical supplies"
-            - "The public spaces in our area are unsanitary"
-            
-            **Education Examples:**
-            - "Our school has broken desks and students share textbooks"
-            - "The school library has no books and the roof leaks"
-            - "Classrooms are overcrowded with insufficient learning materials"
-            """)
         
         # Analyze button
         if problem_description:

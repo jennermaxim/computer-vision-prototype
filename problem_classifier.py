@@ -1,7 +1,3 @@
-"""
-Problem Classification Engine
-Automatically categorizes problems into Environment, Health, or Education domains
-"""
 from typing import Dict, Optional, List
 import google.generativeai as genai
 from config import Config
@@ -11,12 +7,6 @@ class ProblemClassifier:
     """Classifies community problems into predefined categories"""
     
     def __init__(self, api_key: Optional[str] = None):
-        """
-        Initialize the classifier
-        
-        Args:
-            api_key: Gemini API key (uses Config if not provided)
-        """
         self.api_key = api_key or Config.GEMINI_API_KEY
         genai.configure(api_key=self.api_key)
         self.model = genai.GenerativeModel(Config.TEXT_MODEL)
@@ -24,16 +14,6 @@ class ProblemClassifier:
     
     def classify_problem(self, problem_description: str, 
                         use_reasoning: bool = True) -> Dict:
-        """
-        Classify a problem into one of the three categories
-        
-        Args:
-            problem_description: Description of the problem to classify
-            use_reasoning: Whether to include reasoning for the classification
-            
-        Returns:
-            Dictionary containing classification results
-        """
         prompt = self._create_classification_prompt(problem_description, use_reasoning)
         
         try:
@@ -61,15 +41,6 @@ class ProblemClassifier:
             }
     
     def classify_with_vision_analysis(self, vision_analysis: str) -> Dict:
-        """
-        Classify based on vision analysis output
-        
-        Args:
-            vision_analysis: Output from the vision detector
-            
-        Returns:
-            Classification results
-        """
         prompt = f"""You are an expert classifier that categorizes community problems into 
 three domains: Environment, Health, and Education. You provide accurate classifications with clear reasoning.
 
@@ -111,16 +82,6 @@ If multiple categories apply, choose the most dominant one."""
     
     def _create_classification_prompt(self, problem_description: str, 
                                      use_reasoning: bool) -> str:
-        """
-        Create a prompt for classification
-        
-        Args:
-            problem_description: The problem to classify
-            use_reasoning: Whether to request reasoning
-            
-        Returns:
-            Formatted prompt string
-        """
         categories_desc = self._get_category_descriptions()
         
         prompt = f"""You are an expert classifier that categorizes community problems into three domains: 
@@ -148,12 +109,6 @@ CONFIDENCE: [High, Medium, or Low]
         return prompt
     
     def _get_category_descriptions(self) -> str:
-        """
-        Get descriptions of each category with examples
-        
-        Returns:
-            Formatted string with category descriptions
-        """
         descriptions = []
         
         for category in self.categories:
@@ -166,15 +121,6 @@ CONFIDENCE: [High, Medium, or Low]
         return '\n'.join(descriptions)
     
     def _parse_classification(self, response: str) -> tuple:
-        """
-        Parse the classification response
-        
-        Args:
-            response: Raw API response
-            
-        Returns:
-            Tuple of (category, confidence, reasoning)
-        """
         category = None
         confidence = "Unknown"
         reasoning = ""
@@ -227,15 +173,6 @@ CONFIDENCE: [High, Medium, or Low]
         return category, confidence, reasoning
     
     def classify_batch(self, problem_descriptions: List[str]) -> List[Dict]:
-        """
-        Classify multiple problems
-        
-        Args:
-            problem_descriptions: List of problem descriptions
-            
-        Returns:
-            List of classification results
-        """
         results = []
         for description in problem_descriptions:
             result = self.classify_problem(description)
@@ -245,14 +182,5 @@ CONFIDENCE: [High, Medium, or Low]
 
 # Convenience function
 def classify_community_problem(problem_description: str) -> Dict:
-    """
-    Convenience function to classify a single problem
-    
-    Args:
-        problem_description: Description of the problem
-        
-    Returns:
-        Classification results dictionary
-    """
     classifier = ProblemClassifier()
     return classifier.classify_problem(problem_description)
