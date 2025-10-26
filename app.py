@@ -84,7 +84,7 @@ def display_header():
     """Display the application header"""
     st.markdown('<div class="main-header">AI-Powered Learning Platform</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="sub-header">Recognize and translate community challenges into structured learning missions</div>',
+        '<div class="sub-header">Recognize and translate community challenges into structured learning missions statements</div>',
         unsafe_allow_html=True
     )
 
